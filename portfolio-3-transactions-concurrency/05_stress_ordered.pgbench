@@ -1,0 +1,7 @@
+-- pgbench script: transfer_funds() (ordered locking) under heavy contention.
+-- Each client picks two different wallets from a hot set of 20 and moves a
+-- random amount between them. Wallets: 2200001001 .. 2200001020.
+\set a random(1001, 1020)
+\set off random(1, 19)
+\set b 1001 + (:a - 1001 + :off) % 20
+SELECT transfer_funds('22' || lpad(:a::text, 8, '0'), '22' || lpad(:b::text, 8, '0'), round((1 + random() * 99)::numeric, 2), 'pgb-' || gen_random_uuid()::text);

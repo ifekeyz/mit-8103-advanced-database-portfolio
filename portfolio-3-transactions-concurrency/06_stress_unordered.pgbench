@@ -1,0 +1,6 @@
+-- pgbench script: the SAME workload using transfer_funds_unordered().
+-- Locks are taken sender-first, so opposite transfers can deadlock.
+\set a random(1001, 1020)
+\set off random(1, 19)
+\set b 1001 + (:a - 1001 + :off) % 20
+SELECT transfer_funds_unordered('22' || lpad(:a::text, 8, '0'), '22' || lpad(:b::text, 8, '0'), round((1 + random() * 99)::numeric, 2), 'pgb-' || gen_random_uuid()::text);
