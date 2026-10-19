@@ -1,0 +1,78 @@
+Table customers {
+  customer_id bigint [pk, increment]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  email varchar(255) [unique, not null]
+  phone varchar(20) [unique, not null]
+  customer_type varchar(20) [not null, note: 'INDIVIDUAL or MERCHANT']
+  status varchar(20) [not null, default: 'ACTIVE']
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table kyc_records {
+  kyc_id bigint [pk, increment]
+  customer_id bigint [not null, ref: > customers.customer_id]
+  id_type varchar(30) [not null, note: 'NIN, BVN, PASSPORT']
+  id_number varchar(50) [not null]
+  verification_status varchar(20) [not null, default: 'PENDING']
+  submitted_at timestamptz [not null, default: `now()`]
+  verified_at timestamptz
+}
+
+Table accounts {
+  account_id bigint [pk, increment]
+  customer_id bigint [not null, ref: > customers.customer_id]
+  account_number char(10) [unique, not null]
+  currency char(3) [not null, default: 'NGN']
+  balance numeric(19,4) [not null, default: 0, note: 'CHECK balance >= 0']
+  status varchar(20) [not null, default: 'ACTIVE']
+  opened_at timestamptz [not null, default: `now()`]
+}
+
+Table beneficiaries {
+  beneficiary_id bigint [pk, increment]
+  customer_id bigint [not null, ref: > customers.customer_id]
+  bank_name varchar(100) [not null]
+  account_number char(10) [not null]
+  account_name varchar(150) [not null]
+}
+
+Table cards {
+  card_id bigint [pk, increment]
+  account_id bigint [not null, ref: > accounts.account_id]
+  last_four char(4) [not null]
+  card_type varchar(20) [not null]
+  expiry_date date [not null]
+  status varchar(20) [not null, default: 'ACTIVE']
+}
+
+Table transactions {
+  transaction_id bigint [pk, increment]
+  idempotency_key varchar(64) [unique, not null]
+  txn_type varchar(20) [not null, note: 'DEPOSIT, WITHDRAWAL, TRANSFER, BILL_PAYMENT, REVERSAL']
+  status varchar(20) [not null, default: 'PENDING']
+  amount numeric(19,4) [not null, note: 'CHECK amount > 0']
+  reference varchar(100)
+  reversal_of bigint [ref: > transactions.transaction_id]
+  initiated_at timestamptz [not null, default: `now()`]
+  completed_at timestamptz
+}
+
+Table ledger_entries {
+  entry_id bigint [pk, increment]
+  transaction_id bigint [not null, ref: > transactions.transaction_id]
+  account_id bigint [not null, ref: > accounts.account_id]
+  direction varchar(6) [not null, note: 'DEBIT or CREDIT']
+  amount numeric(19,4) [not null, note: 'CHECK amount > 0']
+  balance_after numeric(19,4) [not null]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table fraud_flags {
+  flag_id bigint [pk, increment]
+  transaction_id bigint [not null, ref: > transactions.transaction_id]
+  reason varchar(200) [not null]
+  risk_score smallint [not null, note: 'CHECK 0 to 100']
+  status varchar(20) [not null, default: 'OPEN']
+  flagged_at timestamptz [not null, default: `now()`]
+}
