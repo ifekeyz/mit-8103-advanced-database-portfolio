@@ -1,39 +1,38 @@
 # MIT 8103 Advanced Database Systems Portfolio
 
-## Case Study
+**Case study:** NairaPay, a simulated Nigerian fintech wallet and transfer platform.
+**Primary database:** PostgreSQL. **Secondary:** MongoDB (audit logs and KYC documents).
 
-DevSculpt
+# Case Study: NairaPay (Simulated Fintech Platform)
 
-## Objective
+## Organisation / Scenario
+NairaPay is a simulated Nigerian fintech company offering mobile wallets
+and money transfers to individuals and small businesses.
 
-To design, implement, test, optimise, and document an
-advanced database system using a consistent financial
-services case study.
+## Nature of the System
+A digital wallet platform where customers hold naira accounts, send money
+to other wallets and to bank accounts, pay for airtime and bills, and view
+their transaction history.
 
-## Portfolio Activities
+## Users of the Database
+- Customers (individuals and merchants) via the mobile/web app
+- Customer support staff (account lookups, dispute handling)
+- Compliance/audit officers (KYC review, suspicious activity checks)
+- System services (payment processing, notifications, reporting)
 
+## Major Data Stored
+- Customers and KYC verification records
+- Accounts/wallets and balances
+- Transactions and double-entry ledger entries
+- Beneficiaries (saved recipients)
+- Cards and bank-linked accounts
+- Audit logs and fraud/risk flags
 
-
-## Technology
-
-- PostgreSQL
-- MongoDB
-- SQL
-- Git and GitHub
-- diagrams.net
-
-## Repository Structure
-
-Each portfolio directory contains implementation files,
-documentation, and supporting evidence.
-
-## Academic Integrity
-
-All test data is synthetic. References and AI assistance
-will be documented where applicable.
-
-## Status
-
-- **Portfolio 1 (Database Design and Modelling):** Completed
-- **Portfolio 2 (Query Processing and Optimisation):** Completed
-- **Portfolio 3 (Transactions and Concurrency):** Ready for implementation
+## Key Operations Supported
+- Open an account and complete KYC
+- Deposit and withdraw funds
+- Transfer funds between accounts
+- Reverse failed transactions
+- Generate account statements
+- Audit account balances
+- Flag and review suspicious transactions
