@@ -1,0 +1,119 @@
+############ CRUD ############
+
+--- CREATE: onboard a new customer with a passport (nested fields)
+{
+  customer_id: 999999,
+  tier: 2,
+  status: 'PENDING',
+  documents: [
+    {
+      type: 'BVN',
+      number: '22212345678',
+      verified_with: 'NIBSS'
+    },
+    {
+      type: 'PASSPORT',
+      number: 'A12345678',
+      country: 'NG',
+      expiry: ISODate('2031-05-01T00:00:00.000Z')
+    }
+  ],
+  created_at: ISODate('2026-10-19T05:25:14.224Z')
+}
+
+--- READ: tier 3 customers who hold a PASSPORT (query inside an array)
+count = 316
+
+--- READ: passports expiring in the next 365 days (nested field filter)
+count = 21
+
+--- READ: last 3 audit events for customer 1001 (newest first)
+{
+  customer_id: 1001,
+  event_type: 'KYC_UPGRADED',
+  ts: ISODate('2026-10-16T13:50:14.792Z'),
+  details: {
+    from_tier: 1,
+    to_tier: 2
+  }
+}
+{
+  customer_id: 1001,
+  event_type: 'LOGIN_SUCCESS',
+  ts: ISODate('2026-10-15T08:42:34.362Z'),
+  details: {
+    ip: '102.89.115.88',
+    device: 'Web',
+    city: 'Abuja'
+  }
+}
+{
+  customer_id: 1001,
+  event_type: 'PIN_CHANGED',
+  ts: ISODate('2026-10-15T02:06:00.639Z'),
+  details: {
+    channel: 'USSD'
+  }
+}
+
+--- UPDATE: verify the customer and upgrade to tier 3 ($set) and add a document ($push)
+status=VERIFIED, tier=3, documents=3
+
+--- UPDATE: record the change in the audit log (append-only: we insert, never edit)
+
+--- DELETE: remove the demo customer profile
+deleted = 1
+
+############ AGGREGATION ############
+
+--- Aggregation 1: events per type in the last 30 days
+  LOGIN_SUCCESS: 13425
+  TRANSFER_INITIATED: 9996
+  LOGIN_FAILED: 4911
+  KYC_UPGRADED: 1689
+  FRAUD_FLAG: 1664
+  PIN_CHANGED: 1621
+
+--- Aggregation 2: total TRANSFER_INITIATED amount per day (latest 5 days)
+  2026-10-19  transfers=75  total=182217.89
+  2026-10-18  transfers=319  total=765530.31
+  2026-10-17  transfers=322  total=817420.28
+  2026-10-16  transfers=333  total=806164.40
+  2026-10-15  transfers=331  total=841442.70
+
+--- Aggregation 3: top 5 customers by failed logins, with their KYC tier ($lookup = a JOIN)
+{
+  failed_logins: 12,
+  customer_id: 4744,
+  tier: 1,
+  status: 'VERIFIED'
+}
+{
+  failed_logins: 11,
+  customer_id: 820,
+  tier: 2,
+  status: 'VERIFIED'
+}
+{
+  failed_logins: 11,
+  customer_id: 1485,
+  tier: 2,
+  status: 'VERIFIED'
+}
+{
+  failed_logins: 10,
+  customer_id: 2768,
+  tier: 1,
+  status: 'REJECTED'
+}
+{
+  failed_logins: 10,
+  customer_id: 3919,
+  tier: 1,
+  status: 'PENDING'
+}
+
+--- Aggregation 4: average number of documents per KYC tier ($size)
+  tier 1: customers=2741, avg documents=1
+  tier 2: customers=1660, avg documents=2
+  tier 3: customers=599, avg documents=4
