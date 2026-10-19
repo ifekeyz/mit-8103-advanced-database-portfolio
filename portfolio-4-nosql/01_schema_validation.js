@@ -92,5 +92,5 @@ try {
     nosql.kyc_profiles.insertOne({ customer_id: 1, status: 'MAYBE' });
     print('FAIL: the invalid document was accepted');
 } catch (e) {
-    print('PASS: invalid KYC document rejected -> ' + e.codeName + ' (code ' + e.code + ')');
+    print('PASS: invalid KYC document rejected -> ' + 'code ' + e.code);
 }
