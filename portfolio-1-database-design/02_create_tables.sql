@@ -1,9 +1,3 @@
--- =====================================================================
--- Portfolio 1: NairaPay schema (PostgreSQL)
--- Run while connected to nairapay_db.
--- Tables are created in dependency order: parents before children.
--- The whole script is one transaction, so a failure leaves no half-built schema.
--- =====================================================================
 
 BEGIN;
 

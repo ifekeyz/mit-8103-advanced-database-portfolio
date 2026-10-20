@@ -1,11 +1,3 @@
--- =====================================================================
--- Portfolio 1: constraint tests for NairaPay
--- Run on nairapay_db AFTER 02_create_tables.sql, in ONE go (F5).
--- Each negative test is wrapped in a DO block that expects the database
--- to reject the bad row, then prints PASS. If the bad row is accepted,
--- the block raises an error instead. Read the output in the Messages tab.
--- =====================================================================
-
 -- ---------- Setup: valid rows that should be accepted ----------
 INSERT INTO customers (first_name, last_name, email, phone, customer_type)
 VALUES ('Feranmi', 'Micheal', 'feranmi@yopmail.com', '08012345678', 'INDIVIDUAL');
