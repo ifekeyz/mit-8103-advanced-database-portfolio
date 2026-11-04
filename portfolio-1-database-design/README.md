@@ -16,7 +16,7 @@
 | `er-diagram.png` | Exported ER diagram |
 | `normalisation.md` | 1NF to 3NF explanation, including deliberate departures from 3NF |
 
-## How to run
+## How to run 
 
 1. In pgAdmin, connect to the local server and run `00_create_database.sql` on the `postgres` database.
 2. Open a Query Tool on `nairapay_db` and run `01_verify_setup.sql`, then `02_create_tables.sql`.

@@ -9,6 +9,7 @@ FROM customers WHERE email = 'feranmi@yopmail.com';
 INSERT INTO transactions (idempotency_key, txn_type, amount)
 VALUES ('txn-key-001', 'DEPOSIT', 500);
 
+
 INSERT INTO ledger_entries (transaction_id, account_id, direction, amount, balance_after)
 SELECT t.transaction_id, a.account_id, 'CREDIT', 500, 500
 FROM transactions t, accounts a

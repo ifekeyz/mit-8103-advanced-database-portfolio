@@ -1,7 +1,3 @@
--- =====================================================================
--- Portfolio 2: verify the seed data
--- Run on nairapay_db after 01_seed_data.sql. Screenshot the results.
--- =====================================================================
 
 -- 1. Row counts per table
 SELECT 'customers' AS table_name, count(*) AS row_count FROM customers

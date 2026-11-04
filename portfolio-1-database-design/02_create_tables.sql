@@ -138,12 +138,5 @@ CREATE TABLE fraud_flags (
     flagged_at     TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- NOTE: performance indexes (for example on ledger_entries.account_id and
--- transactions.initiated_at) are deliberately NOT created here. They are
--- added in Portfolio 2 so the before/after execution plans can be compared.
 
 COMMIT;
-
--- Verification: should list the 8 NairaPay tables.
--- SELECT table_name FROM information_schema.tables
--- WHERE table_schema = 'public' ORDER BY table_name;

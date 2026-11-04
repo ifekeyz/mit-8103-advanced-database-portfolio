@@ -1,19 +1,3 @@
--- =====================================================================
--- Portfolio 2: seed data for NairaPay
--- Run on nairapay_db AFTER 02_create_tables.sql. Takes roughly a minute.
---
--- WARNING: this script first EMPTIES every NairaPay table, so it can be
--- re-run safely, but it will delete any data you added by hand.
---
--- Generates (approximately):
---   5,001 customers (incl. one internal settlement customer), 6,001 accounts
---   ~200,000 transfers, ~6,000 opening deposits, ~100 reversals
---   ~400,000 double-entry ledger lines
--- Everything is generated with SQL (generate_series, random, window
--- functions), so the data is reproducible by anyone with this file.
--- The whole script is a single transaction: it either completes or leaves
--- the tables untouched.
--- =====================================================================
 
 BEGIN;
 
@@ -26,7 +10,7 @@ TRUNCATE customers, transactions RESTART IDENTITY CASCADE;
 --    account funds the opening deposits (the "other side" of each deposit).
 -- ---------------------------------------------------------------------
 INSERT INTO customers (first_name, last_name, email, phone, customer_type, created_at)
-VALUES ('NairaPay', 'Settlement', 'settlement@nairapay.test', '08000000000',
+VALUES ('Carbon', 'Settlement', 'settlement@carbon.test', '08000000000',
         'MERCHANT', now() - interval '800 days');
 
 INSERT INTO customers (first_name, last_name, email, phone, customer_type, status, created_at)
@@ -37,7 +21,7 @@ SELECT
     (ARRAY['Okafor','Adeyemi','Bello','Eze','Okonkwo','Abubakar','Balogun','Nwosu',
            'Abiola','Danjuma','Ogunleye','Lawal','Umeh','Salami','Chukwu'])
         [1 + (n * 11) % 15],
-    'user' || n || '@nairapay.test',
+    'user' || n || '@carbon.test',
     '081' || lpad(n::text, 8, '0'),
     CASE WHEN n % 10 = 0 THEN 'MERCHANT' ELSE 'INDIVIDUAL' END,
     CASE WHEN n % 100 = 0 THEN 'SUSPENDED' ELSE 'ACTIVE' END,
@@ -62,7 +46,7 @@ CROSS JOIN LATERAL (
                 WHEN c.customer_id % 40 = 0 THEN 'REJECTED'
                 ELSE 'VERIFIED' END AS status
 ) s
-WHERE c.email <> 'settlement@nairapay.test';
+WHERE c.email <> 'settlement@carbon.test';
 
 INSERT INTO kyc_records (customer_id, id_type, id_number, verification_status,
                          submitted_at, verified_at)
@@ -77,19 +61,19 @@ WHERE verification_status = 'REJECTED';
 -- ---------------------------------------------------------------------
 INSERT INTO accounts (customer_id, account_number, balance, opened_at)
 SELECT customer_id, '1000000000', 1000000000000, created_at
-FROM customers WHERE email = 'settlement@nairapay.test';
+FROM customers WHERE email = 'settlement@carbon.test';
 
 INSERT INTO accounts (customer_id, account_number, balance, status, opened_at)
 SELECT customer_id, '22' || lpad(customer_id::text, 8, '0'), 0,
        CASE WHEN customer_id % 100 = 0 THEN 'FROZEN' ELSE 'ACTIVE' END,
        created_at + interval '2 days'
-FROM customers WHERE email <> 'settlement@nairapay.test';
+FROM customers WHERE email <> 'settlement@carbon.test';
 
 INSERT INTO accounts (customer_id, account_number, balance, opened_at)
 SELECT customer_id, '33' || lpad(customer_id::text, 8, '0'), 0,
        created_at + interval '10 days'
 FROM customers
-WHERE email <> 'settlement@nairapay.test' AND customer_id % 5 = 0;
+WHERE email <> 'settlement@carbon.test' AND customer_id % 5 = 0;
 
 -- ---------------------------------------------------------------------
 -- 4. Cards (about half of the wallets) and saved beneficiaries (3 each).
@@ -111,7 +95,7 @@ SELECT c.customer_id,
        'Recipient ' || c.customer_id || '-' || k
 FROM customers c
 CROSS JOIN generate_series(1, 3) AS k
-WHERE c.email <> 'settlement@nairapay.test';
+WHERE c.email <> 'settlement@carbon.test';
 
 -- ---------------------------------------------------------------------
 -- 5. Transactions
