@@ -1,0 +1,24 @@
+ total_money_in_system 
+-----------------------
+    1000000000000.0000
+(1 row)
+
+ stress_transfers | stress_ledger_lines 
+------------------+---------------------
+             2000 |                4000
+(1 row)
+
+ unbalanced_transactions 
+-------------------------
+                       0
+(1 row)
+
+ mismatched_accounts 
+---------------------
+                   0
+(1 row)
+
+ stuck_pending_transactions 
+----------------------------
+                          0
+(1 row)

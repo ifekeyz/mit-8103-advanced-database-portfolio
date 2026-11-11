@@ -1,0 +1,13 @@
+pgbench (16.14 (Homebrew))
+transaction type: portfolio-3-transactions-concurrency/06_stress_unordered.pgbench
+scaling factor: 1
+query mode: simple
+number of clients: 10
+number of threads: 4
+maximum number of tries: 1
+number of transactions per client: 200
+number of transactions actually processed: 1944/2000
+number of failed transactions: 56 (2.800%)
+latency average = 204.135 ms (including failures)
+initial connection time = 33.763 ms
+tps = 47.615475 (without initial connection time)
