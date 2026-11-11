@@ -1,0 +1,59 @@
+# Portfolio 5: PostgreSQL primary + streaming read replica for NairaPay.
+# Coursework only: the passwords below are demo values, never use them for real data.
+#
+#   Start : docker compose -f portfolio-5-distributed-cloud/docker-compose.yml up -d
+#   Stop  : docker compose -f portfolio-5-distributed-cloud/docker-compose.yml down       (keeps data)
+#   Reset : docker compose -f portfolio-5-distributed-cloud/docker-compose.yml down -v    (deletes ALL data)
+#
+# Ports on your computer: primary 5433, replica 5434 (your normal PostgreSQL keeps 5432).
+services:
+  primary:
+    image: postgres:16
+    container_name: nairapay-pg-primary
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nairapay
+      POSTGRES_PASSWORD: nairapay_pass
+      POSTGRES_DB: nairapay_db
+      REPLICATION_PASSWORD: repl_pass
+    command:
+      - postgres
+      - -c
+      - wal_level=replica
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_replication_slots=10
+      - -c
+      - wal_keep_size=256MB
+    ports:
+      - "5433:5432"
+    volumes:
+      - primary_data:/var/lib/postgresql/data
+      - ./primary-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # -h 127.0.0.1 forces TCP, which only works after first-time initialisation has finished
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U nairapay -d nairapay_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  replica:
+    image: postgres:16
+    container_name: nairapay-pg-replica
+    restart: unless-stopped
+    depends_on:
+      primary:
+        condition: service_healthy
+    environment:
+      REPLICATION_PASSWORD: repl_pass
+    entrypoint: ["bash", "/replica-entrypoint.sh"]
+    ports:
+      - "5434:5432"
+    volumes:
+      - replica_data:/var/lib/postgresql/data
+      - ./replica-entrypoint.sh:/replica-entrypoint.sh:ro
+
+volumes:
+  primary_data:
+  replica_data:
